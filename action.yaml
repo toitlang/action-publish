@@ -1,6 +1,9 @@
 name: Toit pkg publish
 description: Publish a Toit package to the package registry
 author: Toitware APS
+branding:
+  icon: 'upload-cloud'
+  color: 'black'
 inputs:
   tag:
     description: The tag to publish to.
