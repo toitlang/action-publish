@@ -61,7 +61,6 @@ try {
       console.log("Failed to publish package.");
       const server_response = `${response.statusCode}: ${response.statusMessage}`;
       console.log(server_response);
-      console.log(response)
       core.setFailed(server_response);
     }
   }).catch((error) => {
