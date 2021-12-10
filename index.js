@@ -58,7 +58,7 @@ try {
     if (response.statusCode === 200) {
       console.log("Package published.");
     } else {
-      console.log("Failed to publish message.");
+      console.log("Failed to publish package.");
       const server_response = `${response.statusCode}: ${response.statusMessage}`;
       console.log(server_response);
       core.setFailed(server_response);
