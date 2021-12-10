@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { IncomingMessage } = require('http');
 const https = require('https')
 
 try {
@@ -39,11 +40,10 @@ try {
     }
 
     const req = https.request(options, res => {
-      console.log(`statusCode: ${res.statusCode}`)
-
       res.on('error', error => {
         reject(error);
       });
+
       resolve(res);
     });
 
@@ -55,7 +55,14 @@ try {
   });
 
   request_call.then((response) => {
-    console.log(response);
+    if (res.statusCode === 200) {
+      console.log("Package published.");
+    } else {
+      console.log("Failed to publish message.");
+      const server_response = `${response.statusCode}: ${response.statusMessage}`;
+      console.log(server_response);
+      core.setFailed(server_response);
+    }
   }).catch((error) => {
     console.log(error);
     core.setFailed(error.message);
