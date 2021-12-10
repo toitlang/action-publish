@@ -55,7 +55,7 @@ try {
   });
 
   request_call.then((response) => {
-    if (res.statusCode === 200) {
+    if (response.statusCode === 200) {
       console.log("Package published.");
     } else {
       console.log("Failed to publish message.");
