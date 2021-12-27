@@ -3,7 +3,7 @@ GitHub action for publishing a package
 
 ## Setup
 To set up publishing for a package repository add the following to `./github/workflows/publish.yml`:
-```
+```yml
 name: Publish package
 on:
   push:
