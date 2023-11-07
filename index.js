@@ -4,18 +4,13 @@ const { IncomingMessage } = require('http');
 const https = require('https')
 
 try {
-  const input_options = {
-    required: true,
-    trimWhitespace: true,
-  };
-
   const owner = github.context.repo.owner;
   const repo = github.context.repo.repo;
 
   let tag = core.getInput('tag');
   if (tag === "") {
     const ref = github.context.ref
-    tag = ref.substr(ref.lastIndexOf('/') + 1)
+    tag = ref.substring(ref.lastIndexOf('/') + 1)
     console.log(`No tag given, using '${tag}'.`);
   }
 
@@ -27,7 +22,9 @@ try {
     console.log(`No repository given, using '${repository}'.`)
   }
 
-  let request_call = new Promise((resolve, reject) => {
+  let requestCall = new Promise((resolve, reject) => {
+    let responseBody = '';
+
     const options = {
       hostname: 'pkg.toit.io',
       port: 443,
@@ -44,6 +41,15 @@ try {
         reject(error);
       });
 
+      res.on('data', chunk => {
+        responseBody += chunk;
+      });
+
+      res.on('end', () => {
+        res.body = responseBody;
+        resolve(res);
+      });
+
       resolve(res);
     });
 
@@ -54,14 +60,23 @@ try {
     req.end();
   });
 
-  request_call.then((response) => {
+  requestCall.then((response) => {
     if (response.statusCode === 200) {
       console.log("Package published.");
     } else {
       console.log("Failed to publish package.");
-      const server_response = `${response.statusCode}: ${response.statusMessage}`;
-      console.log(server_response);
-      core.setFailed(server_response);
+      let bodyMessage = ""
+      if (response.body) {
+        try {
+          bodyMessage = JSON.parse(response.body).message;
+        } catch (error) {
+          bodyMessage = response.body;
+        }
+      }
+      const errorMessage = bodyMessage !== "" ? bodyMessage : response.statusMessage;
+      const serverResponse = `${response.statusCode}: ${errorMessage}`;
+      console.log(serverResponse);
+      core.setFailed(serverResponse);
     }
   }).catch((error) => {
     console.log(error);
