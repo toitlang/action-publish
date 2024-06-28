@@ -1,4 +1,4 @@
-# pkg-publish
+# action-publish
 GitHub action for publishing a package
 
 ## Setup
